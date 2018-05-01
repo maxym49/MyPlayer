@@ -125,11 +125,7 @@
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor></JFXTextField>
-            <ProgressBar layoutY="500.0" prefHeight="10.0" prefWidth="366.0" progress="1.0">
-               <effect>
-                  <ColorInput height="5.93" paint="#4aff00" width="255.0" />
-               </effect>
-            </ProgressBar>
+            <ProgressBar fx:id="progressBar" layoutY="500.0" prefHeight="10.0" prefWidth="366.0" progress="0.0" />
             <JFXButton fx:id="openB" buttonType="RAISED" layoutX="20.0" layoutY="680.0" onAction="#openDirectory" prefHeight="66.0" prefWidth="326.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;" text="Search music files... " textFill="#d05a7d">
                <font>
                   <Font name="System Bold" size="18.0" />

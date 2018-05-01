@@ -1,21 +1,18 @@
 package sample;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
-
 import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
+
+
 
 
 public class Controller {
@@ -25,37 +22,22 @@ public class Controller {
     private List<File> selectedFiles = new LinkedList<>();
     private ListIterator iterator;
     private int k=0;
-    private int x=0;
     private int counter = 0;
-    private String piosnka;
+    private String song;
     private String mediaName;
+    private boolean isPlaying = false;
+    private Timer timer;
+    private double tTime = 0;
 
-    @FXML
-    private Button nextButton;
-
-    @FXML
-    private Button previousButton;
-
-    @FXML
-    private Button pauseButton;
-
-    @FXML
-    private Button menuButton;
 
     @FXML
     private AnchorPane menu;
 
     @FXML
-    private Button playButton;
-
-    @FXML
-    private Button exitButton;
-
-    @FXML
     private JFXTextField whatSongfield;
 
     @FXML
-    private JFXButton openB;
+    private ProgressBar progressBar;
 
 
     @FXML
@@ -73,61 +55,39 @@ public class Controller {
         }
     }
     @FXML
-    void znaki(){
-
-        piosnka = whatSongfield.getText();
-        int dlugoscTekstu = piosnka.length();
-
+    void movingText(){
+        song = whatSongfield.getText();
+        int textLength = song.length();
         Timer timer = new Timer(100, e -> {
             counter ++;
-            if(counter > dlugoscTekstu){
+            if(counter > textLength){
                 whatSongfield.setText("");
                 whatSongfield.setPromptText("");
                 counter = 0;
             }else {
-                whatSongfield.setText(piosnka.substring(0,counter));
+                whatSongfield.setText(song.substring(0,counter));
             }
-
         });
         timer.start();
 
     }
-    @FXML
-    void znak(){
-        try {
-            piosnka = whatSongfield.getText();
-            int dlugoscTekstu = piosnka.length();
 
-            Timer timer = new Timer(150, e -> {
-                counter++;
-                if (counter > dlugoscTekstu) {
-                    whatSongfield.setText("");
-                    counter = 0;
-                    whatSongfield.setText(mediaName);
-                } else {
-                    piosnka = whatSongfield.getText() + " ";
-                    whatSongfield.setText(" " + piosnka);
+    @FXML
+    void showMediaTime() {
+        tTime = 0;
+        timer = null;
+        timer = new Timer(1000, e ->{
+                progressBar.setProgress(tTime);
+                tTime = tTime + 0.1;
+            if(tTime > 1){
+                try {
+                    timer.stop();
+                }catch (RuntimeException r){
+                    System.out.println(r);
                 }
+            }
             });
             timer.start();
-        }catch (Exception e){
-            System.out.println(e);
-        }
-
-    }
-
-    @FXML
-    void movingText(){
-        try{
-            Thread.sleep(100);
-            x = x + 10;
-            if(x>whatSongfield.getWidth()){
-                x=0;
-            }
-
-        }catch (Exception e){
-            System.out.println(e);
-        }
     }
 
     @FXML
@@ -135,8 +95,6 @@ public class Controller {
 
 
         try {
-
-
             Object element = iterator.next();
             String path = element.toString().replace("\\", "/");
             System.out.println(path);
@@ -146,40 +104,50 @@ public class Controller {
             Media media = new Media("file:///" + path);
 
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(true);
             mediaName = selectedFiles.get(k).getName();
             whatSongfield.setText(mediaName);
-
-
-            znaki();
-
-
-
-
-
-
             k++;
 
+            mediaPlayer.setOnReady(() -> {
+                movingText();
+                isPlaying = true;
+                mediaPlayer.setAutoPlay(true);
+            });
+
+            mediaPlayer.setOnPlaying(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+
+                            showMediaTime();
+
+
+                    }catch (Exception e){
+                        System.out.println(e);
+                    }
+                }
+            });
+
             mediaPlayer.setOnEndOfMedia(() -> {
+                    isPlaying = false;
                     mediaPlayer.stop();
                     whatSongfield.setText("");
                 if (iterator.hasNext()==true){
                     play();
-
+                    System.out.println( mediaPlayer.getTotalDuration().toSeconds());
                 }
                 else
                     whatSongfield.setText("No more songs!");
                     mediaPlayer.stop();
-
+                System.out.println( mediaPlayer.getTotalDuration().toSeconds());
             });
-
-
 
         } catch (Exception e) {
             System.out.println("You need to choose the music file");
             System.out.println("The error name:\n" + e);
         }
     }
+
     @FXML
     void nextSong(){
         try {
@@ -193,8 +161,6 @@ public class Controller {
         }catch (Exception e){
             System.out.println(e);
         }
-
-
 }
 
     @FXML
@@ -206,10 +172,7 @@ public class Controller {
                 k = k - 1;
                 Object element = iterator.previous();
                 String path = element.toString().replace("\\", "/");
-                System.out.println(path);
                 path = URLEncoder.encode(path, "UTF-8").replace("+", "%20");
-                System.out.println(path);
-                System.out.println();
                 Media media = new Media("file:///" + path);
 
                 mediaPlayer = new MediaPlayer(media);
