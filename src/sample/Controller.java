@@ -1,12 +1,17 @@
 package sample;
 
+import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
+
 import javax.swing.Timer;
 import java.io.File;
 import java.net.URLEncoder;
@@ -25,10 +30,14 @@ public class Controller {
     private int counter = 0;
     private String song;
     private String mediaName;
-    private boolean isPlaying = false;
     private Timer timer;
+    private Timer secondTimer;
     private double tTime = 0;
+    private double onePercent;
 
+
+    @FXML
+    private JFXSlider volumeSlider;
 
     @FXML
     private AnchorPane menu;
@@ -38,6 +47,12 @@ public class Controller {
 
     @FXML
     private ProgressBar progressBar;
+
+    @FXML
+    private JFXToggleButton loopToggle;
+
+    @FXML
+    private JFXSpinner spinner;
 
 
     @FXML
@@ -54,34 +69,60 @@ public class Controller {
             menu.setVisible(false);
         }
     }
-    @FXML
-    void movingText(){
-        song = whatSongfield.getText();
-        int textLength = song.length();
-        Timer timer = new Timer(100, e -> {
-            counter ++;
-            if(counter > textLength){
-                whatSongfield.setText("");
-                whatSongfield.setPromptText("");
-                counter = 0;
-            }else {
-                whatSongfield.setText(song.substring(0,counter));
-            }
-        });
-        timer.start();
 
+    @FXML
+    void testM(){
+        try {
+            mediaPlayer.setOnPlaying(() -> movingText());
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+    @FXML
+    void movingText() {
+        try {
+                song = whatSongfield.getText();
+                int textLength = song.length();
+                secondTimer = new Timer(100, e -> {
+                    counter ++;
+                    if(counter > textLength){
+                        whatSongfield.setText("");
+                        whatSongfield.setPromptText("");
+                        counter = 0;
+                        if((int)mediaPlayer.getCurrentTime().toSeconds()== (int)mediaPlayer.getTotalDuration().toSeconds()){
+                            secondTimer.stop();
+                        }
+                    }else {
+                        whatSongfield.setText(song.substring(0,counter));
+                    }
+                });
+                secondTimer.start();
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
     }
 
     @FXML
     void showMediaTime() {
         tTime = 0;
         timer = null;
-        timer = new Timer(1000, e ->{
+
+        onePercent = (0.01* mediaPlayer.getTotalDuration().toMillis());
+
+
+
+
+
+        timer = new Timer((int)onePercent, e ->{
                 progressBar.setProgress(tTime);
-                tTime = tTime + 0.1;
+                tTime = tTime + 0.01;
+           // System.out.println(mediaPlayer.getCurrentTime().toSeconds()/100 );
             if(tTime > 1){
                 try {
                     timer.stop();
+                    progressBar.setProgress(0);
                 }catch (RuntimeException r){
                     System.out.println(r);
                 }
@@ -109,27 +150,20 @@ public class Controller {
             k++;
 
             mediaPlayer.setOnReady(() -> {
-                movingText();
-                isPlaying = true;
                 mediaPlayer.setAutoPlay(true);
             });
 
-            mediaPlayer.setOnPlaying(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-
-                            showMediaTime();
-
-
-                    }catch (Exception e){
-                        System.out.println(e);
-                    }
+            mediaPlayer.setOnPlaying(() -> {
+                try{
+                       movingText();
+                       showMediaTime();
+                }catch (Exception e){
+                    System.out.println(e);
                 }
             });
 
             mediaPlayer.setOnEndOfMedia(() -> {
-                    isPlaying = false;
+
                     mediaPlayer.stop();
                     whatSongfield.setText("");
                 if (iterator.hasNext()==true){
@@ -153,6 +187,8 @@ public class Controller {
         try {
             if (iterator.hasNext()==true){
                 mediaPlayer.stop();
+                timer.stop();
+                secondTimer.stop();
                 play();
             }
             else{
@@ -168,6 +204,8 @@ public class Controller {
         try {
             if(iterator.hasPrevious()) {
 
+                timer.stop();
+                secondTimer.stop();
                 mediaPlayer.stop();
                 k = k - 1;
                 Object element = iterator.previous();
@@ -176,10 +214,21 @@ public class Controller {
                 Media media = new Media("file:///" + path);
 
                 mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setAutoPlay(true);
                 mediaName = selectedFiles.get(k).getName();
                 whatSongfield.setText(mediaName);
 
+                mediaPlayer.setOnReady(() -> {
+                    mediaPlayer.setAutoPlay(true);
+                });
+
+                mediaPlayer.setOnPlaying(() -> {
+                    try{
+                        movingText();
+                        showMediaTime();
+                    }catch (Exception e){
+                        System.out.println(e);
+                    }
+                });
 
                 mediaPlayer.setOnEndOfMedia(() -> {
                     mediaPlayer.stop();
@@ -202,9 +251,54 @@ public class Controller {
     @FXML
     void pauseSong(){
         try {
-            if (mediaPlayer.isAutoPlay()==true){
-                mediaPlayer.pause();
+                if (mediaPlayer.isAutoPlay()==true){
+                    timer.stop();
+                    secondTimer.stop();
+                    whatSongfield.setText("You've stopped the song");
+                    mediaPlayer.stop();
+                    //I know should be pause method now, but I am also working on the stop button, which is much simpler in my view
             }
+        }catch (Exception e){
+            System.out.println("The error name:\n"+e);
+            whatSongfield.setText("No songs on the list!");
+        }
+
+    }
+
+
+
+    @FXML
+    void setVolume(){
+        try {
+            mediaPlayer.setVolume(volumeSlider.getValue()/100);
+        }catch (Exception e){
+            System.out.println("The error name:\n"+e);
+            whatSongfield.setText("No songs on the list!");
+        }
+
+    }
+
+    @FXML
+    void setLoop(){
+        try {
+            if(spinner.isVisible()!=true){
+                spinner.setVisible(true);
+            }
+            else{
+                spinner.setVisible(false);
+            }
+        }catch (Exception e){
+            System.out.println("The error name:\n"+e);
+        }
+
+    }
+
+
+
+    @FXML
+    void resumeSong(){
+        try {
+            prevSong();
         }catch (Exception e){
             System.out.println("The error name:\n"+e);
             whatSongfield.setText("No songs on the list!");
@@ -225,19 +319,6 @@ public class Controller {
 
     }
 
-    @FXML
-    void resumeSong(){
-
-    mediaPlayer.getCurrentTime();
-    mediaPlayer.pause();
-    //mediaPlayer.pla
-        if (iterator.hasNext()==true){
-            play();
-        }
-        else{
-            System.out.println("No more songs!");
-        }
-    }
 
     @FXML
     void openDirectory(){

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.effect.*?>
@@ -19,9 +20,9 @@
 
 <AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <AnchorPane fx:id="menu" layoutX="399.0" prefHeight="398.0" prefWidth="333.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;" visible="false">
+      <AnchorPane fx:id="menu" layoutX="399.0" prefHeight="398.0" prefWidth="333.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;">
          <children>
-            <Pane prefHeight="117.0" prefWidth="333.0" style="-fx-background-color: #254A61; -fx-background-radius: 6;">
+            <Pane prefHeight="117.0" prefWidth="339.0" style="-fx-background-color: #254A61; -fx-background-radius: 6;">
                <children>
                   <Label layoutX="14.0" layoutY="29.0" prefHeight="60.0" prefWidth="190.0" text="Settings..." textFill="#f2f2f2">
                      <font>
@@ -30,13 +31,38 @@
                   </Label>
                </children>
             </Pane>
+            <Label layoutX="14.0" layoutY="152.0" opacity="0.81" prefHeight="17.0" prefWidth="151.0" text="Volume" textFill="#98acda">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="178.0" opacity="0.85" prefWidth="120.0" />
+            <JFXSlider fx:id="volumeSlider" layoutX="179.0" layoutY="172.0" onMouseDragged="#setVolume" value="100.0">
+               <cursor>
+                  <Cursor fx:constant="OPEN_HAND" />
+               </cursor></JFXSlider>
+            <Label layoutX="14.0" layoutY="206.0" opacity="0.81" prefHeight="17.0" prefWidth="151.0" text="Theme" textFill="#98acda">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="232.0" opacity="0.85" prefWidth="120.0" />
+            <JFXToggleButton layoutX="174.0" layoutY="204.0" prefHeight="56.0" prefWidth="151.0" textFill="#98acda" toggleColor="#57bb57" toggleLineColor="#57bb57" />
+            <Label layoutX="14.0" layoutY="260.0" opacity="0.81" prefHeight="17.0" prefWidth="151.0" text="Loop" textFill="#98acda">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="286.0" opacity="0.85" prefWidth="120.0" />
+            <JFXToggleButton fx:id="loopToggle" layoutX="174.0" layoutY="258.0" onAction="#setLoop" prefHeight="56.0" prefWidth="151.0" textFill="#98acda" toggleColor="#57bb57" toggleLineColor="#57bb57" />
+            <JFXSpinner fx:id="spinner" layoutX="295.0" layoutY="270.0" prefHeight="32.0" prefWidth="32.0" visible="false" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="768.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;">
          <children>
             <Pane layoutY="551.0" prefHeight="110.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;">
                <children>
-                  <Button fx:id="playButton" layoutX="183.0" layoutY="22.0" mnemonicParsing="false" onAction="#play" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: #152A37;">
+                  <Button fx:id="playButton" layoutX="183.0" layoutY="22.0" mnemonicParsing="false" onAction="#resumeSong" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: #152A37;">
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
