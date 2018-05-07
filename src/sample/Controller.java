@@ -238,7 +238,6 @@ public class Controller {
                     whatSongfield.setText("");
                     if (iterator.hasNext() == true) {
                         play();
-
                     } else
                         whatSongfield.setText("No more songs!");
                         mediaPlayer.stop();
