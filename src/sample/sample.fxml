@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.paint.*?>
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import com.jfoenix.controls.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
-<?import javafx.scene.canvas.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 
 <!--Icons made by Freepik from www.flaticon.com-->
 
 <AnchorPane fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <AnchorPane fx:id="menu" layoutX="399.0" prefHeight="398.0" prefWidth="333.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;">
+      <AnchorPane fx:id="menu" layoutX="399.0" prefHeight="398.0" prefWidth="333.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;" visible="false">
          <children>
-            <Pane prefHeight="117.0" prefWidth="339.0" style="-fx-background-color: #254A61; -fx-background-radius: 6;">
+            <Pane fx:id="topMenu" prefHeight="117.0" prefWidth="339.0" style="-fx-background-color: #254A61; -fx-background-radius: 6;">
                <children>
                   <Label layoutX="14.0" layoutY="29.0" prefHeight="60.0" prefWidth="190.0" text="Settings..." textFill="#f2f2f2">
                      <font>
@@ -47,7 +39,7 @@
                </font>
             </Label>
             <Separator layoutX="14.0" layoutY="232.0" opacity="0.85" prefWidth="120.0" />
-            <JFXToggleButton layoutX="174.0" layoutY="204.0" prefHeight="56.0" prefWidth="151.0" textFill="#98acda" toggleColor="#57bb57" toggleLineColor="#57bb57" />
+            <JFXToggleButton fx:id="themeToggle" layoutX="174.0" layoutY="204.0" onAction="#setTheme" prefHeight="56.0" prefWidth="151.0" textFill="#98acda" toggleColor="#57bb57" toggleLineColor="#57bb57" />
             <Label layoutX="14.0" layoutY="260.0" opacity="0.81" prefHeight="17.0" prefWidth="151.0" text="Loop" textFill="#98acda">
                <font>
                   <Font size="18.0" />
@@ -58,13 +50,13 @@
             <JFXSpinner fx:id="spinner" layoutX="295.0" layoutY="270.0" prefHeight="32.0" prefWidth="32.0" visible="false" />
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="768.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;">
+      <AnchorPane fx:id="main" prefHeight="768.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-background-radius: 6;">
          <children>
-            <Pane layoutY="551.0" prefHeight="110.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;">
+            <Pane fx:id="midBar" layoutY="551.0" prefHeight="110.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;">
                <children>
                   <Button fx:id="playButton" layoutX="183.0" layoutY="22.0" mnemonicParsing="false" onAction="#resumeSong" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: #152A37;">
                      <graphic>
-                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="imgV" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="file:/D:/zadania%20java/różne/MyPlayer/icons/bigger/002-play.png" />
                            </image>
@@ -78,7 +70,7 @@
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="file:/D:/zadania%20java/różne/MyPlayer/icons/bigger/001-pause.png" />
+                              <Image url="file:/D:/zadania%20java/różne/MyPlayer/icons/bigger/stop.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -116,7 +108,7 @@
                   <Image url="file:/D:/zadania%20java/różne/MyPlayer/icons/big/96fb1fe23586bc3ca78e91f1f7cb2288.png" />
                </image>
             </ImageView>
-            <AnchorPane layoutX="-1.0" prefHeight="60.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;">
+            <AnchorPane fx:id="topBar" layoutX="-1.0" prefHeight="60.0" prefWidth="366.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;">
                <children>
                   <Button fx:id="menuButton" layoutX="6.0" layoutY="10.0" mnemonicParsing="false" onAction="#showMenu" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #152A37;">
                      <graphic>
@@ -142,6 +134,18 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Button fx:id="minimizeB" layoutX="266.0" layoutY="10.0" mnemonicParsing="false" onAction="#mini" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #152A37;">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="file:/D:/zadania%20java/różne/MyPlayer/icons/menu%20and%20exit/line.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                </children>
             </AnchorPane>
             <JFXTextField fx:id="whatSongfield" blendMode="ADD" editable="false" focusColor="#4d4d4d" layoutX="20.0" layoutY="427.0" prefHeight="20.0" prefWidth="326.0" promptText="Play something! ">
@@ -155,7 +159,10 @@
             <JFXButton fx:id="openB" buttonType="RAISED" layoutX="20.0" layoutY="680.0" onAction="#openDirectory" prefHeight="66.0" prefWidth="326.0" style="-fx-background-color: #152A37; -fx-border-color: #283544; -fx-border-radius: 6;" text="Search music files... " textFill="#d05a7d">
                <font>
                   <Font name="System Bold" size="18.0" />
-               </font></JFXButton>
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></JFXButton>
          </children>
       </AnchorPane>
    </children>
